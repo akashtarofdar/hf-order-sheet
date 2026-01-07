@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>HF Sublimation - Final Version</title>
+    <title>HF Sublimation - Ultra Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -35,7 +35,7 @@
         .label-red { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 3px 10px; border-radius: 3px; margin-bottom: 5px; display: inline-block; }
         .stat-val { font-family: 'Teko', sans-serif; font-size: 28px; color: var(--dark); margin-bottom: 10px; line-height: 1; }
 
-        .req-box { background: #fff; border: 1px solid #eee; padding: 8px; font-size: 13px; margin-bottom: 15px; min-height: 60px; word-wrap: break-word; }
+        .req-box { background: #fff; border: 1px solid #eee; padding: 8px; font-size: 13px; margin-bottom: 15px; min-height: 80px; word-wrap: break-word; }
 
         .image-container { width: 100%; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .design-box { height: 260px; }
@@ -50,7 +50,7 @@
 <body class="active-preview">
 
 <div class="admin-panel">
-    <h2 style="text-align:center; color:var(--primary);">Update HF Order System</h2>
+    <h2 style="text-align:center; color:var(--primary);">HF ORDER SYSTEM</h2>
     <div class="grid-layout">
         <div class="input-box"><label>ইনভয়েস নম্বর:</label><input type="text" id="inInvoice" placeholder="AV-1" oninput="upd()"></div>
         <div class="input-box"><label>ফাইল নাম:</label><input type="text" id="fileName" placeholder="AV-1" oninput="upd()"></div>
@@ -63,10 +63,10 @@
     </div>
     <div class="input-box" style="margin-bottom: 15px;">
         <label>রিকোয়ারমেন্ট (Requirements):</label>
-        <textarea id="inReq" rows="2" placeholder="Ex: Collar red, Sleeve border black..." oninput="upd()"></textarea>
+        <textarea id="inReq" rows="2" placeholder="অর্ডারের বিশেষ নোট..." oninput="upd()"></textarea>
     </div>
     <table class="entry">
-        <thead><tr><th>সাইজ</th><th>মোট জার্সি</th><th>Full (F)</th><th>Half (H)</th><th>Pant (P)</th></tr></thead>
+        <thead><tr><th>সাইজ</th><th>মোট</th><th>Full (F)</th><th>Half (H)</th><th>Pant (P)</th></tr></thead>
         <tbody id="rows"></tbody>
     </table>
     <div class="grid-layout" style="margin-top:20px">
@@ -137,11 +137,21 @@
         tbody.innerHTML += `<tr><td><strong>${s}</strong></td><td><input type="number" class="v-total" value="0" oninput="upd()"></td><td><input type="number" class="v-f" value="0" oninput="upd()"></td><td><input type="number" class="v-h" value="0" oninput="upd()"></td><td><input type="number" class="v-p" value="0" oninput="upd()"></td></tr>`;
     });
 
+    // তারিখ ফরম্যাট করার ফাংশন (DD/MM/YY)
+    function formatDate(dateStr) {
+        if(!dateStr) return "---";
+        const date = new Date(dateStr);
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = String(date.getFullYear()).slice(-2);
+        return `${d}/${m}/${y}`;
+    }
+
     function upd() {
         document.getElementById('outInvoice').innerText = document.getElementById('inInvoice').value || "---";
         document.getElementById('outFile').innerText = document.getElementById('fileName').value || "---";
-        document.getElementById('outDate').innerText = document.getElementById('inDate').value || "---";
-        document.getElementById('outDel').innerText = document.getElementById('inDel').value || "---";
+        document.getElementById('outDate').innerText = formatDate(document.getElementById('inDate').value);
+        document.getElementById('outDel').innerText = formatDate(document.getElementById('inDel').value);
         document.getElementById('outName').innerText = document.getElementById('inName').value || "---";
         document.getElementById('outDesigner').innerText = document.getElementById('inDesigner').value || "---";
         document.getElementById('outReq').innerText = document.getElementById('inReq').value || "---";
@@ -171,12 +181,20 @@
         const area = document.getElementById('a4-eco-sheet');
         const invNo = document.getElementById('inInvoice').value || "Invoice";
         const custName = document.getElementById('inName').value || "Order";
+        
+        // ফাইল নেম সেট করা: InvoiceNo_CustomerName.pdf
+        const safeFileName = `${invNo}_${custName}`.replace(/[/\\?%*:|"<>]/g, '-');
+
         html2canvas(area, { scale: 3, useCORS: true }).then(canvas => {
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            
+            // প্রিভিউ ওপেন করা
             window.open(pdf.output('bloburl'), '_blank');
-            pdf.save(`${invNo}_${custName}.pdf`);
+            
+            // নির্দিষ্ট নামে সেভ করা
+            pdf.save(`${safeFileName}.pdf`);
         });
     }
     upd();

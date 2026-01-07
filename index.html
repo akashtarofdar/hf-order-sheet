@@ -2,26 +2,23 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>HF Sublimation - Requirement Highlighted</title>
+    <title>HF Sublimation - Universal Order System</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #E31E24; --dark: #1e272e; --highlight: #fff9c4; }
         body { font-family: 'Hind Siliguri', sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Admin Panel Styles */
         .admin-panel { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 950px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; border-top: 8px solid var(--primary); }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .input-box label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        .input-box input, .input-box textarea { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        .input-box input, .input-box textarea, .input-box select { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
         
         table.entry { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table.entry th { background: var(--dark); color: white; padding: 10px; font-size: 14px; }
         table.entry td { border: 1px solid #eee; padding: 5px; text-align: center; }
         table.entry input { width: 55px; text-align: center; border: 1px solid #ddd; }
 
-        /* A4 Layout Area */
         #a4-eco-sheet {
             width: 794px; height: 1123px; background: white; padding: 40px;
             display: flex; flex-direction: column; box-sizing: border-box;
@@ -36,26 +33,17 @@
         .main-body { display: grid; grid-template-columns: 240px 1fr; gap: 25px; flex-grow: 1; }
         .side-col { background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #f0f0f0; display: flex; flex-direction: column; }
         
-        /* Highlighted Requirement Box */
-        .req-highlight-box { 
-            background: var(--highlight); 
-            border: 2px solid #fbc02d; 
-            padding: 10px; 
-            border-radius: 5px;
-            margin-bottom: 20px;
-            min-height: 100px;
-        }
+        .req-highlight-box { background: var(--highlight); border: 2px solid #fbc02d; padding: 10px; border-radius: 5px; margin-bottom: 20px; min-height: 80px; }
         .req-title { font-size: 14px; font-weight: bold; color: #d32f2f; text-decoration: underline; margin-bottom: 5px; display: block; }
         .req-text { font-size: 14px; color: #000; font-weight: 700; line-height: 1.4; word-wrap: break-word; }
 
-        .label-red { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 3px 10px; border-radius: 3px; margin-bottom: 5px; display: inline-block; }
+        .label-red { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 3px 10px; border-radius: 3px; margin-bottom: 5px; display: inline-block; text-transform: uppercase; }
         .stat-val { font-family: 'Teko', sans-serif; font-size: 28px; color: var(--dark); margin-bottom: 10px; line-height: 1; }
 
         .image-container { width: 100%; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .design-box { height: 260px; }
         .list-box { height: 440px; margin-top: 20px; } 
         .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .img-label { position: absolute; top: 5px; right: 5px; font-size: 10px; color: #999; font-weight: bold; background: rgba(255,255,255,0.8); padding: 2px 5px; }
 
         .footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; font-size: 13px; color: #777; }
         .dl-btn { background: var(--primary); color: white; border: none; padding: 18px; font-size: 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
@@ -64,25 +52,55 @@
 <body class="active-preview">
 
 <div class="admin-panel">
-    <h2 style="text-align:center; color:var(--primary);">HF ORDER SYSTEM</h2>
+    <h2 style="text-align:center; color:var(--primary);">HF UNIVERSAL ORDER SYSTEM</h2>
+    
     <div class="grid-layout">
-        <div class="input-box"><label>ইনভয়েস নম্বর:</label><input type="text" id="inInvoice" placeholder="ফাইল নাম লিখুন" oninput="upd()"></div>
-        <div class="input-box"><label>ফাইল নাম:</label><input type="text" id="fileName" placeholder="ফাইল নাম লিখুন" oninput="upd()"></div>
+        <div class="input-box"><label>ইনভয়েস নম্বর:</label><input type="text" id="inInvoice" placeholder="HF-101" oninput="upd()"></div>
+        <div class="input-box"><label>ফাইল নাম:</label><input type="text" id="fileName" placeholder="File Name" oninput="upd()"></div>
         <div class="input-box"><label>অর্ডার তারিখ:</label><input type="date" id="inDate" oninput="upd()"></div>
     </div>
+
+    <div class="grid-layout">
+        <div class="input-box">
+            <label>অর্ডার টাইপ (Top):</label>
+            <select id="topType" onchange="upd()">
+                <option value="Jersey">Jersey</option>
+                <option value="Tracksuit">Tracksuit</option>
+            </select>
+        </div>
+        <div class="input-box">
+            <label>অর্ডার টাইপ (Bottom):</label>
+            <select id="bottomType" onchange="upd()">
+                <option value="Pant">Pant</option>
+                <option value="Trouser">Trouser</option>
+            </select>
+        </div>
+        <div class="input-box"><label>ডেলিভারি তারিখ:</label><input type="date" id="inDel" oninput="upd()"></div>
+    </div>
+
     <div class="grid-layout">
         <div class="input-box"><label>কাস্টমার নাম:</label><input type="text" id="inName" oninput="upd()"></div>
-        <div class="input-box"><label>ডেলিভারি তারিখ:</label><input type="date" id="inDel" oninput="upd()"></div>
         <div class="input-box"><label>ডিজাইনার নাম:</label><input type="text" id="inDesigner" oninput="upd()"></div>
     </div>
+
     <div class="input-box" style="margin-bottom: 15px;">
-        <label style="color:red">রিকোয়ারমেন্ট (Requirements) - এটি হাইলাইট হবে:</label>
-        <textarea id="inReq" rows="3" placeholder="কলার, হাতা বা প্রিন্টিং এর বিশেষ নির্দেশনাবলী এখানে লিখুন..." oninput="upd()"></textarea>
+        <label style="color:red">রিকোয়ারমেন্ট (Requirements):</label>
+        <textarea id="inReq" rows="3" placeholder="কলার, হাতা বা বিশেষ নির্দেশনাবলী এখানে লিখুন..." oninput="upd()"></textarea>
     </div>
+
     <table class="entry">
-        <thead><tr><th>সাইজ</th><th>মোট</th><th>Full (F)</th><th>Half (H)</th><th>Pant (P)</th></tr></thead>
+        <thead>
+            <tr>
+                <th>সাইজ</th>
+                <th>মোট</th>
+                <th>Full (F)</th>
+                <th>Half (H)</th>
+                <th id="tableBottomHead">Pant (P)</th>
+            </tr>
+        </thead>
         <tbody id="rows"></tbody>
     </table>
+
     <div class="grid-layout" style="margin-top:20px">
         <div class="input-box"><label>ডিজাইন ছবি:</label><input type="file" accept="image/*" onchange="previewImg(event, 'outDesignImg')"></div>
         <div class="input-box"><label>লিস্ট ছবি:</label><input type="file" accept="image/*" onchange="previewImg(event, 'outListImg')"></div>
@@ -94,7 +112,7 @@
     <div class="sheet-header">
         <div>
             <div class="brand">HF SUBLIMATION</div>
-            <div style="font-size: 12px; color: #666; font-weight: bold;">PREMIUM JERSEY MANUFACTURER</div>
+            <div style="font-size: 12px; color: #666; font-weight: bold;">PREMIUM SPORTSWEAR MANUFACTURER</div>
             <div class="invoice-tag">INVOICE: <span id="outInvoice">---</span></div>
         </div>
         <div style="text-align: right; font-size: 14px;">
@@ -113,10 +131,10 @@
             <div class="label-red">Requirement / বিশেষ নির্দেশ</div>
             <div class="req-highlight-box">
                 <span class="req-title">MUST FOLLOW:</span>
-                <div id="outReq" class="req-text">---</div>
+                <div id="outReq" class="req-text">নির্দেশনা নেই</div>
             </div>
 
-            <div class="label-red">Sleeve Type</div>
+            <div class="label-red">Top Type: <span id="outTopLabel">Jersey</span></div>
             <div class="stat-val">F: <span id="totF">0</span> | H: <span id="totH">0</span></div>
             
             <div class="label-red">Size Breakup</div>
@@ -124,18 +142,16 @@
 
             <div style="margin-top:auto;">
                 <div class="label-red">Final Quantity</div>
-                <div class="stat-val" style="font-size:42px; color:var(--primary); margin-bottom:0;">JERSEY: <span id="totJ">0</span></div>
-                <div class="stat-val" style="font-size:28px; color:#555;">PANT: <span id="totP">0</span></div>
+                <div class="stat-val" style="font-size:35px; color:var(--primary); margin-bottom:0;"><span id="outTopFinal">JRS</span>: <span id="totJ">0</span></div>
+                <div class="stat-val" style="font-size:28px; color:#555;"><span id="outBottomFinal">PNT</span>: <span id="totP">0</span></div>
             </div>
         </div>
 
         <div class="content-col">
             <div class="image-container design-box">
-                <span class="img-label">DESIGN PREVIEW</span>
                 <img id="outDesignImg" src="">
             </div>
             <div class="image-container list-box">
-                <span class="img-label">NAME & NUMBER LIST</span>
                 <img id="outListImg" src="">
             </div>
         </div>
@@ -143,7 +159,7 @@
 
     <div class="footer">
         <div>Prepared By: <strong id="outDesigner">---</strong></div>
-        <div>This is a computer generated order sheet.</div>
+        <div>HF SUBLIMATION - Official Order Sheet</div>
     </div>
 </div>
 
@@ -157,13 +173,19 @@
     function formatDate(dateStr) {
         if(!dateStr) return "---";
         const date = new Date(dateStr);
-        const d = String(date.getDate()).padStart(2, '0');
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const y = String(date.getFullYear()).slice(-2);
-        return `${d}/${m}/${y}`;
+        return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getFullYear()).slice(-2)}`;
     }
 
     function upd() {
+        const topType = document.getElementById('topType').value;
+        const bottomType = document.getElementById('bottomType').value;
+
+        // আপডেট লেবেল
+        document.getElementById('tableBottomHead').innerText = `${bottomType} (P)`;
+        document.getElementById('outTopLabel').innerText = topType;
+        document.getElementById('outTopFinal').innerText = topType === "Jersey" ? "JRS" : "TRK";
+        document.getElementById('outBottomFinal').innerText = bottomType === "Pant" ? "PNT" : "TRS";
+
         document.getElementById('outInvoice').innerText = document.getElementById('inInvoice').value || "---";
         document.getElementById('outFile').innerText = document.getElementById('fileName').value || "---";
         document.getElementById('outDate').innerText = formatDate(document.getElementById('inDate').value);
@@ -211,5 +233,3 @@
 </script>
 </body>
 </html>
-
-

@@ -45,7 +45,8 @@
         .list-box { height: 440px; margin-top: 20px; } 
         .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; font-size: 13px; color: #777; }
+        .footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 13px; color: #777; }
+        .designer-highlight { color: #333; font-size: 15px; border-bottom: 2px solid var(--primary); padding-bottom: 2px; }
         .footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
         .dl-btn { background: var(--primary); color: white; border: none; padding: 18px; font-size: 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
     </style>
@@ -159,8 +160,14 @@
     </div>
 
     <div class="footer">
-        <div>Prepared By: <strong id="outDesigner">---</strong></div>
-        <div>System developed by: <a href="https://www.facebook.com/AbuSiddikTarafdar" target="_blank">Skyme</a></div>
+        <div>
+            <span style="font-size: 11px; text-transform: uppercase;">Design Prepared By:</span><br>
+            <strong class="designer-highlight" id="outDesigner">---</strong>
+        </div>
+        <div style="text-align: right;">
+            <span style="font-size: 10px;">System developed by:</span><br>
+            <a href="https://www.facebook.com/AbuSiddikTarafdar" target="_blank">Skyme</a>
+        </div>
     </div>
 </div>
 

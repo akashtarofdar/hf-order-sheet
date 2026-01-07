@@ -2,23 +2,26 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>HF Sublimation - Ultra Final</title>
+    <title>HF Sublimation - Requirement Highlighted</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #E31E24; --dark: #1e272e; }
+        :root { --primary: #E31E24; --dark: #1e272e; --highlight: #fff9c4; }
         body { font-family: 'Hind Siliguri', sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Admin Panel Styles */
         .admin-panel { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 950px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; border-top: 8px solid var(--primary); }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .input-box label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        .input-box input, .input-box textarea { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .input-box input, .input-box textarea { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
         
         table.entry { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table.entry th { background: var(--dark); color: white; padding: 10px; font-size: 14px; }
         table.entry td { border: 1px solid #eee; padding: 5px; text-align: center; }
         table.entry input { width: 55px; text-align: center; border: 1px solid #ddd; }
 
+        /* A4 Layout Area */
         #a4-eco-sheet {
             width: 794px; height: 1123px; background: white; padding: 40px;
             display: flex; flex-direction: column; box-sizing: border-box;
@@ -32,10 +35,21 @@
 
         .main-body { display: grid; grid-template-columns: 240px 1fr; gap: 25px; flex-grow: 1; }
         .side-col { background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #f0f0f0; display: flex; flex-direction: column; }
+        
+        /* Highlighted Requirement Box */
+        .req-highlight-box { 
+            background: var(--highlight); 
+            border: 2px solid #fbc02d; 
+            padding: 10px; 
+            border-radius: 5px;
+            margin-bottom: 20px;
+            min-height: 100px;
+        }
+        .req-title { font-size: 14px; font-weight: bold; color: #d32f2f; text-decoration: underline; margin-bottom: 5px; display: block; }
+        .req-text { font-size: 14px; color: #000; font-weight: 700; line-height: 1.4; word-wrap: break-word; }
+
         .label-red { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 3px 10px; border-radius: 3px; margin-bottom: 5px; display: inline-block; }
         .stat-val { font-family: 'Teko', sans-serif; font-size: 28px; color: var(--dark); margin-bottom: 10px; line-height: 1; }
-
-        .req-box { background: #fff; border: 1px solid #eee; padding: 8px; font-size: 13px; margin-bottom: 15px; min-height: 80px; word-wrap: break-word; }
 
         .image-container { width: 100%; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .design-box { height: 260px; }
@@ -62,8 +76,8 @@
         <div class="input-box"><label>ডিজাইনার নাম:</label><input type="text" id="inDesigner" oninput="upd()"></div>
     </div>
     <div class="input-box" style="margin-bottom: 15px;">
-        <label>রিকোয়ারমেন্ট (Requirements):</label>
-        <textarea id="inReq" rows="2" placeholder="অর্ডারের বিশেষ নোট..." oninput="upd()"></textarea>
+        <label style="color:red">রিকোয়ারমেন্ট (Requirements) - এটি হাইলাইট হবে:</label>
+        <textarea id="inReq" rows="3" placeholder="কলার, হাতা বা প্রিন্টিং এর বিশেষ নির্দেশনাবলী এখানে লিখুন..." oninput="upd()"></textarea>
     </div>
     <table class="entry">
         <thead><tr><th>সাইজ</th><th>মোট</th><th>Full (F)</th><th>Half (H)</th><th>Pant (P)</th></tr></thead>
@@ -96,14 +110,17 @@
 
     <div class="main-body">
         <div class="side-col">
+            <div class="label-red">Requirement / বিশেষ নির্দেশ</div>
+            <div class="req-highlight-box">
+                <span class="req-title">MUST FOLLOW:</span>
+                <div id="outReq" class="req-text">---</div>
+            </div>
+
             <div class="label-red">Sleeve Type</div>
             <div class="stat-val">F: <span id="totF">0</span> | H: <span id="totH">0</span></div>
             
             <div class="label-red">Size Breakup</div>
             <div id="outSizes" style="font-family:'Teko'; font-size:22px; margin-bottom: 15px;"></div>
-
-            <div class="label-red">Requirements</div>
-            <div id="outReq" class="req-box">---</div>
 
             <div style="margin-top:auto;">
                 <div class="label-red">Final Quantity</div>
@@ -137,7 +154,6 @@
         tbody.innerHTML += `<tr><td><strong>${s}</strong></td><td><input type="number" class="v-total" value="0" oninput="upd()"></td><td><input type="number" class="v-f" value="0" oninput="upd()"></td><td><input type="number" class="v-h" value="0" oninput="upd()"></td><td><input type="number" class="v-p" value="0" oninput="upd()"></td></tr>`;
     });
 
-    // তারিখ ফরম্যাট করার ফাংশন (DD/MM/YY)
     function formatDate(dateStr) {
         if(!dateStr) return "---";
         const date = new Date(dateStr);
@@ -154,7 +170,7 @@
         document.getElementById('outDel').innerText = formatDate(document.getElementById('inDel').value);
         document.getElementById('outName').innerText = document.getElementById('inName').value || "---";
         document.getElementById('outDesigner').innerText = document.getElementById('inDesigner').value || "---";
-        document.getElementById('outReq').innerText = document.getElementById('inReq').value || "---";
+        document.getElementById('outReq').innerText = document.getElementById('inReq').value || "নির্দেশনা নেই";
 
         let tf=0, th=0, tp=0, tj=0, sizeHtml="";
         sizes.forEach((s, i) => {
@@ -179,21 +195,15 @@
 
     async function downloadPDF() {
         const area = document.getElementById('a4-eco-sheet');
-        const invNo = document.getElementById('inInvoice').value || "Invoice";
+        const invNo = document.getElementById('inInvoice').value || "Inv";
         const custName = document.getElementById('inName').value || "Order";
-        
-        // ফাইল নেম সেট করা: InvoiceNo_CustomerName.pdf
         const safeFileName = `${invNo}_${custName}`.replace(/[/\\?%*:|"<>]/g, '-');
 
         html2canvas(area, { scale: 3, useCORS: true }).then(canvas => {
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-            
-            // প্রিভিউ ওপেন করা
             window.open(pdf.output('bloburl'), '_blank');
-            
-            // নির্দিষ্ট নামে সেভ করা
             pdf.save(`${safeFileName}.pdf`);
         });
     }

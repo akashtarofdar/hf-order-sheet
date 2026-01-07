@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>HF Sublimation - Pro Invoice System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --primary: #E31E24; --dark: #1e272e; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .admin-panel { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 950px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; border-top: 8px solid var(--primary); }
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .input-box label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #555; }
+        .input-box input { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 6px; box-sizing: border-box; transition: 0.3s; }
+        .input-box input:focus { border-color: var(--primary); outline: none; }
+        
+        table.entry { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table.entry th { background: var(--dark); color: white; padding: 10px; font-size: 14px; }
+        table.entry td { border: 1px solid #eee; padding: 8px; text-align: center; }
+        table.entry input { width: 55px; text-align: center; padding: 4px; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* A4 Layout Area */
+        #a4-eco-sheet {
+            width: 794px; height: 1123px; background: white; padding: 40px;
+            display: flex; flex-direction: column; box-sizing: border-box;
+            border: 1px solid #ddd; position: absolute; left: -9999px; /* স্ক্রিনে দেখাবে না শুধু পিডিএফ এ আসবে */
+        }
+        .active-preview #a4-eco-sheet { position: relative; left: 0; margin-top: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+
+        .sheet-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 4px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+        .brand { font-size: 45px; font-weight: 900; color: var(--primary); font-family: 'Teko', sans-serif; line-height: 1; }
+        .invoice-tag { background: var(--dark); color: white; padding: 5px 15px; border-radius: 4px; font-family: 'Teko', sans-serif; font-size: 20px; margin-top: 10px; display: inline-block; }
+
+        .main-body { display: grid; grid-template-columns: 240px 1fr; gap: 25px; flex-grow: 1; }
+        .side-col { background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #f0f0f0; }
+        .label-red { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 3px 10px; border-radius: 3px; margin-bottom: 5px; display: inline-block; text-transform: uppercase; }
+        .stat-val { font-family: 'Teko', sans-serif; font-size: 30px; color: var(--dark); margin-bottom: 10px; line-height: 1; }
+
+        .image-container { width: 100%; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; position: relative; }
+        .design-box { height: 260px; }
+        .list-box { height: 440px; } 
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .img-label { position: absolute; top: 5px; right: 5px; font-size: 10px; color: #999; font-weight: bold; background: rgba(255,255,255,0.8); padding: 2px 5px; }
+
+        .footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; font-size: 13px; color: #777; }
+        .dl-btn { background: #E31E24; color: white; border: none; padding: 18px; font-size: 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; transition: 0.3s; }
+        .dl-btn:hover { background: #c2181d; box-shadow: 0 5px 15px rgba(227,30,36,0.3); }
+    </style>
+</head>
+<body class="active-preview">
+
+<div class="admin-panel">
+    <h2 style="text-align:center; color:var(--primary); margin-bottom: 25px;">HF Sublimation Order System</h2>
+    
+    <div class="grid-layout">
+        <div class="input-box"><label>ইনভয়েস নম্বর (Ex: HF-101):</label><input type="text" id="inInvoice" placeholder="HF-101" oninput="upd()"></div>
+        <div class="input-box"><label>ফাইল নাম:</label><input type="text" id="fileName" placeholder="Nazmul_Jersey" oninput="upd()"></div>
+        <div class="input-box"><label>অর্ডার তারিখ:</label><input type="date" id="inDate" oninput="upd()"></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="input-box"><label>কাস্টমার নাম:</label><input type="text" id="inName" placeholder="কাস্টমারের নাম" oninput="upd()"></div>
+        <div class="input-box"><label>ডেলিভারি তারিখ:</label><input type="date" id="inDel" oninput="upd()"></div>
+        <div class="input-box"><label>ডিজাইনার নাম:</label><input type="text" id="inDesigner" placeholder="ডিজাইনারের নাম" oninput="upd()"></div>
+    </div>
+
+    <table class="entry">
+        <thead>
+            <tr><th>সাইজ</th><th>মোট জার্সি</th><th>Full (F)</th><th>Half (H)</th><th>Pant (P)</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+    </table>
+
+    <div class="grid-layout" style="margin-top:20px">
+        <div class="input-box"><label>ডিজাইন ছবি আপলোড:</label><input type="file" accept="image/*" onchange="previewImg(event, 'outDesignImg')"></div>
+        <div class="input-box"><label>নাম-নাম্বার লিস্ট ছবি আপলোড:</label><input type="file" accept="image/*" onchange="previewImg(event, 'outListImg')"></div>
+    </div>
+
+    <button class="dl-btn" onclick="downloadPDF()">Generate & Print PDF</button>
+</div>
+
+<div id="a4-eco-sheet">
+    <div class="sheet-header">
+        <div>
+            <div class="brand">HF SUBLIMATION</div>
+            <div style="font-size: 12px; color: #666; font-weight: bold; letter-spacing: 1px;">PREMIUM JERSEY MANUFACTURER</div>
+            <div class="invoice-tag">INVOICE: <span id="outInvoice">---</span></div>
+        </div>
+        <div style="text-align: right; font-size: 14px;">
+            <div style="margin-bottom: 5px;"><strong>DATE:</strong> <span id="outDate">---</span></div>
+            <div style="margin-bottom: 5px;"><strong>DELIVERY:</strong> <span id="outDel">---</span></div>
+            <div><strong>FILE:</strong> <span id="outFile">---</span></div>
+        </div>
+    </div>
+
+    <div style="background:var(--dark); color:white; padding:10px; text-align:center; margin-bottom:20px; font-weight:bold; font-size: 20px; border-radius: 5px;">
+        CUSTOMER: <span id="outName">---</span>
+    </div>
+
+    <div class="main-body">
+        <div class="side-col">
+            <div class="label-red">Sleeve Type</div>
+            <div class="stat-val">F: <span id="totF">0</span> | H: <span id="totH">0</span></div>
+            
+            <div class="label-red">Size Breakup</div>
+            <div id="outSizes" style="font-family:'Teko'; font-size:24px; color: #333;"></div>
+
+            <div style="margin-top:auto; padding-top: 20px; border-top: 2px solid #eee;">
+                <div class="label-red">Final Quantity</div>
+                <div class="stat-val" style="font-size:45px; color:var(--primary); margin-bottom: 0;">JRS: <span id="totJ">0</span></div>
+                <div class="stat-val" style="font-size:30px; color:#555;">PNT: <span id="totP">0</span></div>
+            </div>
+        </div>
+
+        <div class="content-col">
+            <div class="image-container design-box">
+                <span class="img-label">DESIGN PREVIEW</span>
+                <img id="outDesignImg" src="">
+            </div>
+
+            <div class="image-container list-box" style="margin-top: 20px;">
+                <span class="img-label">NAME & NUMBER LIST</span>
+                <img id="outListImg" src="">
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>Prepared By: <strong id="outDesigner">---</strong></div>
+        <div>This is a computer generated order sheet.</div>
+    </div>
+</div>
+
+<script>
+    const sizes = ["6XL", "5XL", "4XL", "3XL", "XXL", "XL", "L", "M", "S", "BABY"];
+    const tbody = document.getElementById('rows');
+
+    sizes.forEach(s => {
+        tbody.innerHTML += `<tr>
+            <td><strong>${s}</strong></td>
+            <td><input type="number" class="v-total" value="0" oninput="upd()"></td>
+            <td><input type="number" class="v-f" value="0" oninput="upd()"></td>
+            <td><input type="number" class="v-h" value="0" oninput="upd()"></td>
+            <td><input type="number" class="v-p" value="0" oninput="upd()"></td>
+        </tr>`;
+    });
+
+    function upd() {
+        document.getElementById('outInvoice').innerText = document.getElementById('inInvoice').value || "---";
+        document.getElementById('outFile').innerText = document.getElementById('fileName').value || "---";
+        document.getElementById('outDate').innerText = document.getElementById('inDate').value || "---";
+        document.getElementById('outDel').innerText = document.getElementById('inDel').value || "---";
+        document.getElementById('outName').innerText = document.getElementById('inName').value || "---";
+        document.getElementById('outDesigner').innerText = document.getElementById('inDesigner').value || "---";
+
+        let tf=0, th=0, tp=0, tj=0, sizeHtml="";
+        sizes.forEach((s, i) => {
+            let total = parseInt(document.querySelectorAll('.v-total')[i].value) || 0;
+            let f = parseInt(document.querySelectorAll('.v-f')[i].value) || 0;
+            let h = parseInt(document.querySelectorAll('.v-h')[i].value) || 0;
+            let p = parseInt(document.querySelectorAll('.v-p')[i].value) || 0;
+            if(total > 0 || p > 0) sizeHtml += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #f0f0f0;"><span>${s}</span> <span>${total}</span></div>`;
+            tf+=f; th+=h; tp+=p; tj+=total;
+        });
+        document.getElementById('outSizes').innerHTML = sizeHtml;
+        document.getElementById('totF').innerText = tf;
+        document.getElementById('totH').innerText = th;
+        document.getElementById('totJ').innerText = tj;
+        document.getElementById('totP').innerText = tp;
+    }
+
+    function previewImg(e, outId) {
+        if(!e.target.files[0]) return;
+        let r = new FileReader();
+        r.onload = () => { document.getElementById(outId).src = r.result; }
+        r.readAsDataURL(e.target.files[0]);
+    }
+
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const area = document.getElementById('a4-eco-sheet');
+        const invNo = document.getElementById('inInvoice').value || "Invoice";
+        const custName = document.getElementById('inName').value || "Order";
+
+        html2canvas(area, { scale: 3, useCORS: true }).then(canvas => {
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            
+            // নতুন ট্যাবে প্রিন্ট প্রিভিউ
+            window.open(pdf.output('bloburl'), '_blank');
+            
+            // ফাইল সেভ করার সময় ইনভয়েস নম্বর + নাম ব্যবহার করা
+            pdf.save(`${invNo}_${custName}.pdf`);
+        });
+    }
+
+    upd();
+</script>
+</body>
+</html>

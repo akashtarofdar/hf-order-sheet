@@ -46,6 +46,7 @@
         .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; font-size: 13px; color: #777; }
+        .footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
         .dl-btn { background: var(--primary); color: white; border: none; padding: 18px; font-size: 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
     </style>
 </head>
@@ -159,7 +160,7 @@
 
     <div class="footer">
         <div>Prepared By: <strong id="outDesigner">---</strong></div>
-        <div>Order Sheet Generator by Skyme</div>
+        <div>System developed by: <a href="https://www.facebook.com/AbuSiddikTarafdar" target="_blank">Skyme</a></div>
     </div>
 </div>
 
@@ -180,7 +181,6 @@
         const topType = document.getElementById('topType').value;
         const bottomType = document.getElementById('bottomType').value;
 
-        // আপডেট লেবেল
         document.getElementById('tableBottomHead').innerText = `${bottomType} (P)`;
         document.getElementById('outTopLabel').innerText = topType;
         document.getElementById('outTopFinal').innerText = topType === "Jersey" ? "JRS" : "TRK";
@@ -233,4 +233,3 @@
 </script>
 </body>
 </html>
-
